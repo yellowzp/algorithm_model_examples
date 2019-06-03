@@ -1,0 +1,4 @@
+query1	item1
+query1	item2
+query2	item2
+query2	item3
