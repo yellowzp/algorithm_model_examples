@@ -76,12 +76,12 @@ class SimRank(object):
         return w_matrix
 
     def run(self, iter_num):
-        print self.s_matrix
+        # print self.s_matrix
         for idx in xrange(iter_num):
             tmp = self.C * np.dot(np.dot(self.w_matrix.transpose(), self.s_matrix), self.w_matrix)
             new_s = tmp + np.identity(self.v_num) - np.diag(np.diag(tmp))
             self.s_matrix = new_s
-            print self.s_matrix
+            # print self.s_matrix
 
     def print_sim(self):
         print "set a:"
