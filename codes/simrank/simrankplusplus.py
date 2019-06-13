@@ -4,6 +4,7 @@
 author: Vesper Huang
 """
 import numpy as np
+import math
 
 
 class SimRankPlusPlus(object):
@@ -72,6 +73,18 @@ class SimRankPlusPlus(object):
         for idx in xrange(self.v_num - 1):
             total = np.sum(w_matrix[idx])
             w_matrix[idx] = w_matrix[idx] / total
+
+        # 每一列乘上方差项
+        for idx in xrange(self.v_num - 1):
+            var = np.var(w_matrix[:, idx])
+            tmp = math.exp(-var)
+            w_matrix[:, idx] = tmp * w_matrix[:, idx]
+
+        # 修正对角线上的值
+        for idx in xrange(self.v_num - 1):
+            w_matrix[idx, idx] = 0
+            tmp = np.sum(w_matrix[idx])
+            w_matrix[idx, idx] = 1 - tmp
 
         # for key, value in vertex_dict.items():
         #     print key, value
