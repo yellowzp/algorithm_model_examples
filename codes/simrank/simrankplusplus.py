@@ -9,7 +9,7 @@ import math
 
 class SimRankPlusPlus(object):
     """
-    朴素SimRank实现类
+    SimRank++实现类
 
     Attributes:
         C: 阻尼系数
@@ -101,6 +101,8 @@ class SimRankPlusPlus(object):
             new_s = tmp + np.identity(self.v_num) - np.diag(np.diag(tmp))
             self.s_matrix = new_s
             # print self.s_matrix
+
+        self.s_matrix = np.multiply(self.e_matrix, self.s_matrix)
 
     def print_sim(self):
         print "set a:"

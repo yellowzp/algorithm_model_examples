@@ -34,5 +34,7 @@ import numpy as np
 #     tmp = new
 #     print tmp
 
-a = np.array([1, 1, 1, 1], dtype=float)
-print np.var(a)
+a = np.array([[1, 1], [1, 1]], dtype=float)
+# print np.var(a)
+b = np.array([[1, 2], [3, 4]], dtype=float)
+print np.multiply(a, b)
