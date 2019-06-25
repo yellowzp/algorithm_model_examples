@@ -18,6 +18,7 @@ class SimRankPlusPlus(object):
         w_matrix: 转移概率矩阵
         s_matrix: 相似度矩阵
         e_matrix: 证据矩阵
+        adj_matrix: 连接矩阵
     """
 
     def __init__(self, C, bi_graph_file):
@@ -31,7 +32,7 @@ class SimRankPlusPlus(object):
         self.v_a_list = []
         self.v_b_list = []
         self.v_num = 0
-        self.w_matrix = self._read_bi_graph(bi_graph_file)
+        self.w_matrix, self.adj_matrix = self._read_bi_graph(bi_graph_file)
         self.s_matrix = np.identity(self.v_num)
         self.e_matrix = self._init_evidence()
 
@@ -49,7 +50,7 @@ class SimRankPlusPlus(object):
             line_seg = line.strip().split("\t")
             v1 = line_seg[0]
             v2 = line_seg[1]
-            click = line_seg[2]
+            click = float(line_seg[2])
             if v1 not in vertex_dict:
                 vertex_dict[v1] = self.v_num
                 self.vertex_list.append(v1)
@@ -64,24 +65,27 @@ class SimRankPlusPlus(object):
         f.close()
 
         # 初始化为二部图连接矩阵
+        adj_matrix = np.zeros([self.v_num, self.v_num], dtype=float)
         w_matrix = np.zeros([self.v_num, self.v_num], dtype=float)
         for edge in edge_list:
             w_matrix[edge[0], edge[1]] += edge[2]
             w_matrix[edge[1], edge[0]] += edge[2]
+            adj_matrix[edge[0], edge[1]] = 1
+            adj_matrix[edge[1], edge[0]] = 1
 
         # 每一行归一化，变换为转移概率
-        for idx in xrange(self.v_num - 1):
+        for idx in xrange(self.v_num):
             total = np.sum(w_matrix[idx])
             w_matrix[idx] = w_matrix[idx] / total
 
         # 每一列乘上方差项
-        for idx in xrange(self.v_num - 1):
+        for idx in xrange(self.v_num):
             var = np.var(w_matrix[:, idx])
             tmp = math.exp(-var)
             w_matrix[:, idx] = tmp * w_matrix[:, idx]
 
         # 修正对角线上的值
-        for idx in xrange(self.v_num - 1):
+        for idx in xrange(self.v_num):
             w_matrix[idx, idx] = 0
             tmp = np.sum(w_matrix[idx])
             w_matrix[idx, idx] = 1 - tmp
@@ -89,10 +93,25 @@ class SimRankPlusPlus(object):
         # for key, value in vertex_dict.items():
         #     print key, value
         # print w_matrix
-        return w_matrix
+        return w_matrix, adj_matrix
 
     def _init_evidence(self):
-        pass
+        # print self.adj_matrix
+        e_matrix = np.identity(self.v_num)
+        for idx in xrange(self.v_num):
+            for idx2 in xrange(idx + 1, self.v_num):
+                hit_num = 0
+                for j in xrange(self.v_num):
+                    if self.adj_matrix[idx, j] > 0 and self.adj_matrix[idx2, j] > 0:
+                        hit_num += 1
+                evi = 0
+                for i in xrange(hit_num):
+                    evi += math.pow(0.5, i + 1)
+                e_matrix[idx, idx2] = evi
+                e_matrix[idx2, idx] = evi
+        # print "e_matrix"
+        # print e_matrix
+        return e_matrix
 
     def run(self, iter_num):
         # print self.s_matrix
@@ -124,5 +143,5 @@ if __name__ == "__main__":
     iter_num = 5
     obj = SimRankPlusPlus(C, bi_graph_file)
     obj.run(iter_num)
-    # obj.print_sim()
+    obj.print_sim()
 
