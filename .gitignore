@@ -104,3 +104,6 @@ venv.bak/
 .mypy_cache/
 
 *.gz
+
+# idea project doc
+.idea

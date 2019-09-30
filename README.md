@@ -1,3 +1,3 @@
-# algorithm_model_examples
+# yellowzp_machine_learning
 
-机器学习模型代码实例
+Notes and codes for learning ML.
