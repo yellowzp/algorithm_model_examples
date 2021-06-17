@@ -1,3 +1,3 @@
-# yellowzp_machine_learning
+# yellowzp_algorithms
 
-Notes and codes for learning ML.
+对于学习工作中接触的算法模型的代码整理。
