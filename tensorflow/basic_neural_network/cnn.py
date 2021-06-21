@@ -2,6 +2,8 @@
 # -*- coding:utf-8 -*-
 """
 @author: Vesper Huang
+
+https://github.com/aymericdamien/TensorFlow-Examples
 """
 
 from __future__ import division, print_function, absolute_import
